@@ -1,0 +1,124 @@
+
+= What you model is a posterior probability distribution.
+For example, if that is supposed to be a normal distribution
+% y ~ normal (alpha + beta .* x, sqrt(sigsq))
+then the mean is modelled here by the parameter vectors 'alpha', 'beta'
+and the data vector 'x' and the standard deviation 'sqrt(sigsq)'.
+
+= Likelihood function is for data, prior function is for beliefs.
+
+= Normalisation was a problem for multivariate parameter spaces until
+the arrival of MCMC methods, which sample from the posterior distribution
+and estimate that distribution with sufficient accuracy.
+However, the samples are not independent.
+
+= Metropolis-Hastings samplers (like the Gibbs samplers) can use
+asymmetric acceptance rules, but convergence can be very slow when
+the parameter space is partially correlated.
+
+= Hamiltonian Monte Carlo uses a gradient method. It uses the image of
+'position' for the parameter space \theta and the auxiliary function
+\phi for 'momentum'. Then it runs similar to an MD simulation of a mass
+matrix. Each move is again taken as a proposal for a Metropolis selection.
+
+= Stan language (in that order, can be left out if not required):
+-  function block
+-  data block
+     Declarations only
+-  transformed data block
+      First declarations, then assignments
+-  parameters (required)
+     Declarations of all unknowns we want to learn about
+     No integers
+     Must define range of values, otherwise [-inf,inf] assumed
+-  transformed parameters
+	 First declarations, then assignments
+     Often used to handle missing data
+-  model (required)
+     Contains sampling statements:
+     variable ~ some_distribution(...)
+     y[n] ~ normal(eta, sqrt(sigma_sq));
+
+     Must define a distribution for each paramter, otherwise it is flat
+     Must adjust for transformed parameters in the model
+-  generated_quantities block
+     Ececuted once per sample 
+
+Everything declared in the model block is local.
+Any declaration is unavailable to previous blocks.
+Local varaibles cannot be constrained.
+
+Function 'expose_stan_function' to call a C++ function in R.
+
+= Data types:
+	1. primitive types: 'int' and 'real'
+	2. vector amd matrix types
+		col_vector[5] c; '* col vector of length 5 */
+		row_vector[3] r; /* row vector of length 3 */
+		matrix[4, 5]; /* matrix is always real, not int */
+	3. array types
+		real a1[3];
+		int a2[5, 3];
+		matrix[3, 3] a3[2]; /* 2-D array of 3x3 matrices *
+
+= The difference between vector and array is the order of the type specification.
+
+= Variables can be declared with constrained.
+	int<lower=1> N;
+	real<lower=-1, upper=1> y[3,2];
+	vector<lower=0>[10] z;
+
+= Indexing is like in R.
+
+= Element-wise vector multiplication is done using the '.*' operator.
+
+= Distribution function names: like R, but with suffix
+  normal()
+  normal_lpdf()
+ normal_lcdf()
+
+= Help with the function 'lookup()'
+
+
+= Prediction is done by passing a list of hyperparameters to pass to Stan.
+The names of the list elements must match those defined in the Stan function.
+
+= Divergence can occur in the HMC sampler if the time step is too large.
+In that case increase 'adapt_delta' (move acceptance rate) from 0.8 to
+higher values.
+
+= The return object of the 'stan' function is the S4 'stanfit' obhject.
+Dereference the slots with the '@' symbol.
+
+= List the methods of the 'stanfit' class:
+% methods(class = "stanfit");
+
+= All the functions related to the posterior function automatically remove
+the burn-in data.
+
+= MC sampling creates non-independent samples and the efficiency of sampling
+independently is called 'mixing'.
+
+= Numerical convergence diagnostics:
+  - 'n_eff' and 'Rhat'
+
+    Rhat is an estimate of Gelman and Rubin's 'potential scale reduction factor.    Should be as close to 1.0 as possible for all parameters, and certainly
+    no more than 1.1. That is a comparison of the between-chain variance and
+    the within-chain variance.
+
+    n_eff is the effective sample size based on the pooled (post burn-in)
+    samples from all chains. One should have at roughly least 1000 samples.
+
+= Graphical convergence diagnostics:
+	% output = as.array(lin_reg)
+	% library("jrRstan")
+	% diagnostics(mcmc, rows = 3, lag.max = 50, pool = FALSE, )
+
+= Count data are best modelled with Poisson distribution.
+
+= A regression with a function of the exponential family that is not 'normal'
+is a 'generalised linear model'.
+
+= Stan runs by default with 4 chains and 2000 iterations, 1000 of those as warm-up. The total number of steps for productive posterior sampling is therefore 40000.
+
+

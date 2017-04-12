@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#! /usr/bin/R\n\nfunctions {\n  real deviance(vector y, matrix X, vector beta, real sigma_sq)  {\n    real dev;\n    dev = 0;\n    for (n in 1:num_elements(y)) {\n      real eta;\n      eta = 0;\n      for (k in 1:cols(X)) {\n        eta = eta + X[n, k] * beta[k];\n      }\n      dev = dev + (-2) * normal_lpdf(y[n] | eta, sqrt(sigma_sq));\n    }\n    return dev;\n  }\n}\n\ndata {\n  int<lower=1> K;\n  int<lower=1> N;\n  matrix[N, K] X;\n  vector[N] y;\n  row_vector[K] x_pred;\n  real m_beta[K];\n  real m_sigma_sq;\n  real<lower=0> s_beta[K];\n  real<lower=0> s_sigma_sq;\n}\n\ntransformed data {\n}\n\nparameters {\n  real<lower=0> sigma_sq;\n  vector[K] beta;\n}\n\ntransformed parameters {\n}\n\nmodel {\n  vector[N] eta;\n  eta = X * beta;\n\n  // vectorised form of the normal distribution */\n  y ~ normal(eta, sqrt(sigma_sq));\n\n  // prior: vectorised form of the normal distribution\n  beta ~ normal(m_beta, s_beta);\n\n  sigma_sq ~ lognormal(m_sigma_sq, s_sigma_sq);\n}\n\ngenerated quantities {\n  real y_pred;\n  real dev;\n  {\n    real eta_pred;\n    eta_pred = 0;\n    for (k in 1:K) {\n      eta_pred = eta_pred + x_pred[k] + beta[k];\n    }\n    y_pred = normal_rng(eta_pred, sqrt(sigma_sq));\n  }\n  dev = deviance(y, X, beta, sigma_sq);\n}\n\n",
+    "created" : 1491924080605.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2948533559",
+    "id" : "68BE61E8",
+    "lastKnownWriteTime" : 1491839964,
+    "last_content_update" : 1491839964,
+    "path" : "~/2COPIES/develop/Bayes/Rstan/Course_20170410/figure3_1_v2.stan",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "stan"
+}

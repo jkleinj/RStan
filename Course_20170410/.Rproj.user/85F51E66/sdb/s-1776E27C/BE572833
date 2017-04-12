@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#! /usr/bin/R\n\nlibrary(\"rstan\");\nlibrary(\"jrRstan\");\nlibrary(\"nlme\");\n\nrstan_options(auto_write = TRUE);\noptions(mc.core = parallel::detectCores);\n\ndata(\"Oxboys\");\nhead(Oxboys);\n\n## observable\ny = Oxboys$height;\n\n## covariate\nx = Oxboys$age;\n\n## subject labels\nsubj_label = as.numeric(Oxboys$Subject);\n## number of subjects\nN_subj = length(unique(subj_label));\n\n## list for Stan\nOxboys_data = list(y = y, N = length(y), N_subj = N_subj, x = x, subj_label = subj_label,\n                   m_alpha0 = 140, s_alpha0 = 3, m_beta0 = 15, s_beta0 = 7.5,\n                   a_sigsq = 1.1, b_sigsq = 0.025, a_sigsq_alpha1 = 1.1, b_sigsq_alpha1 = 0.05,\n                   a_sigsq_beta1 = 1, b_sigsq_beta1 = 0.1);\n\nrandslope_1 = stan(\"oxboys_1.stan\", data = Oxboys_data);\n\n## print numerical results\nprint(randslope_1);\n\n## print graphical results\noutput = as.array(randslope_1);\nstr(output);\n\n\n\n",
+    "created" : 1491915488386.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3019720263",
+    "id" : "BE572833",
+    "lastKnownWriteTime" : 1491925068,
+    "last_content_update" : 1491925143112,
+    "path" : "~/2COPIES/develop/Bayes/Rstan/Course_20170410/oxboys_1.R",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
