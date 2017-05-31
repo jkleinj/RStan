@@ -34,8 +34,6 @@ enroll = 1000;
 ## create and mean-centre continuous covariates
 x_pred = c(1, 50, 50, 50, 1000, 0, 0);
 x_pred[2:5] = x_pred[2:5] - X_means;
-## specigy hyperparameters in prior
-
-
+## specify hyperparameters in prior
 
 

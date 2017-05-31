@@ -21,3 +21,4 @@ X = as.matrix(X);
 sideeffect_data = list(y = y, N = nrow(X), K = ncol(X), X = X, n = sideeffect$n);
 
 binreg = stan("binomial_regression.stan", data = sideeffect_data);
+

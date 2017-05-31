@@ -29,7 +29,13 @@ Oxboys_data = list(y = y, N = length(y), N_subj = N_subj, x = x, subj_label = su
 
 randslope_1 = stan("oxboys_1.stan", data = Oxboys_data);
 
-## print results
+## print numerical results
 print(randslope_1);
 
-
+## print graphical results
+output = as.array(randslope_1);
+str(output);
+## Format as vector, removing the log posterior (i.e. "__lp"):
+x = out[1, - length(out)]
+## Plot data:
+barplot(table(x))
